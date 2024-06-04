@@ -1,15 +1,26 @@
 param (
-    [int]$seconds
+    [int]$seconds = 60
 )
 
 $code = @"
+using System;
+using System.Runtime.InteropServices;
+
+public class UserInput {
     [DllImport("user32.dll")]
     public static extern bool BlockInput(bool fBlockIt);
+}
 "@
 
-$userInput = Add-Type -MemberDefinition $code -Name UserInput -Namespace UserInput -PassThru
+# Add the type
+$userInput = Add-Type -TypeDefinition $code -Name UserInput -Namespace UserInput -PassThru
 
-function Disable-UserInput($seconds) {
+# Function to disable user input
+function Disable-UserInput {
+    param (
+        [int]$seconds
+    )
+
     $startTime = Get-Date
     $userInput::BlockInput($true)
 
@@ -28,7 +39,7 @@ function Disable-UserInput($seconds) {
 if (-not (Test-Path -Path "C:\Temp\DisableUserInputTime.txt")) {
     $remainingTime = $seconds
 } else {
-    $remainingTime = Get-Content -Path "C:\Temp\DisableUserInputTime.txt" | Out-String
+    $remainingTime = [int](Get-Content -Path "C:\Temp\DisableUserInputTime.txt" | Out-String)
     Remove-Item -Path "C:\Temp\DisableUserInputTime.txt" -Force
 }
 
@@ -42,4 +53,3 @@ $action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-File `"$
 $trigger = New-ScheduledTaskTrigger -AtStartup
 $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -Hidden -RunOnlyIfNetworkAvailable -StartWhenAvailable
 Register-ScheduledTask -Action $action -Trigger $trigger -TaskName $taskName -Description "Disable User Input for $seconds seconds" -Settings $settings
-run directly on powershell
