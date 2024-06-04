@@ -1,55 +1,17 @@
-param (
-    [int]$seconds = 60
-)
+#Run As Administrator
+if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) { Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs; exit }
 
 $code = @"
-using System;
-using System.Runtime.InteropServices;
-
-public class UserInput {
     [DllImport("user32.dll")]
     public static extern bool BlockInput(bool fBlockIt);
-}
 "@
 
-# Add the type
-$userInput = Add-Type -TypeDefinition $code -Name UserInput -Namespace UserInput -PassThru
+$userInput = Add-Type -MemberDefinition $code -Name UserInput -Namespace UserInput -PassThru
 
-# Function to disable user input
-function Disable-UserInput {
-    param (
-        [int]$seconds
-    )
-
-    $startTime = Get-Date
+function Disable-UserInput($seconds) {
     $userInput::BlockInput($true)
-
-    for ($i = $seconds; $i -gt 0; $i--) {
-        Start-Sleep -Seconds 1
-        $elapsed = (Get-Date) - $startTime
-        $remainingTime = $seconds - [math]::Ceiling($elapsed.TotalSeconds)
-        Set-Content -Path "C:\Temp\DisableUserInputTime.txt" -Value $remainingTime
-    }
-
+    Start-Sleep $seconds
     $userInput::BlockInput($false)
-    Remove-ScheduledTask -TaskName "DisableUserInputTask"
-    Remove-Item -Path $MyInvocation.MyCommand.Path -Force
 }
 
-if (-not (Test-Path -Path "C:\Temp\DisableUserInputTime.txt")) {
-    $remainingTime = $seconds
-} else {
-    $remainingTime = [int](Get-Content -Path "C:\Temp\DisableUserInputTime.txt" | Out-String)
-    Remove-Item -Path "C:\Temp\DisableUserInputTime.txt" -Force
-}
-
-if ($remainingTime -gt 0) {
-    Disable-UserInput -seconds $remainingTime
-}
-
-# Schedule the task
-$taskName = "DisableUserInputTask"
-$action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-File `"$MyInvocation.MyCommand.Path`" -seconds $seconds"
-$trigger = New-ScheduledTaskTrigger -AtStartup
-$settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -Hidden -RunOnlyIfNetworkAvailable -StartWhenAvailable
-Register-ScheduledTask -Action $action -Trigger $trigger -TaskName $taskName -Description "Disable User Input for $seconds seconds" -Settings $settings
+Disable-UserInput -seconds 4 | Out-Null
