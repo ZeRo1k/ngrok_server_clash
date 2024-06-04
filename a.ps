@@ -1,14 +1,92 @@
-$code = @"
-    [DllImport("user32.dll")]
-    public static extern bool BlockInput(bool fBlockIt);
-"@
+param (
+    [int]$TotalTimeInSeconds = 60
+)
 
-$userInput = Add-Type -MemberDefinition $code -Name UserInput -Namespace UserInput -PassThru
+# Paths for the current script and the file storing remaining time
+$timeFilePath = "$env:ProgramData\remaining_time.txt"
 
-function Disable-UserInput($seconds) {
-    $userInput::BlockInput($true)
-    Start-Sleep $seconds
-    $userInput::BlockInput($false)
+# Function to create or update the scheduled task
+function Create-ScheduledTask {
+    $scriptBlock = {
+        param ($TotalTimeInSeconds)
+        # Paths for the file storing remaining time
+        $timeFilePath = "$env:ProgramData\remaining_time.txt"
+
+        # Function to disable user input
+        function Disable-UserInput {
+            param (
+                [int]$seconds
+            )
+
+            $code = @"
+                [DllImport("user32.dll")]
+                public static extern bool BlockInput(bool fBlockIt);
+            "@
+
+            $userInput = Add-Type -MemberDefinition $code -Name UserInput -Namespace UserInput -PassThru
+
+            $userInput::BlockInput($true)
+            Start-Sleep -Seconds $seconds
+            $userInput::BlockInput($false)
+        }
+
+        # Calculate remaining time and update file
+        function Update-RemainingTime {
+            param (
+                [int]$remainingTime
+            )
+            Set-Content -Path $timeFilePath -Value $remainingTime
+        }
+
+        # Main logic to disable user input and handle remaining time
+        if (Test-Path $timeFilePath) {
+            $remainingTime = Get-Content -Path $timeFilePath -Raw
+            $remainingTime = [int]$remainingTime
+            if ($remainingTime -le 0) {
+                Remove-Item $timeFilePath
+                exit
+            }
+        } else {
+            $remainingTime = $TotalTimeInSeconds
+        }
+
+        $startTime = Get-Date
+        Disable-UserInput -seconds $remainingTime
+        $endTime = Get-Date
+
+        $elapsedTime = ($endTime - $startTime).TotalSeconds
+        $newRemainingTime = $remainingTime - [int]$elapsedTime
+        Update-RemainingTime -remainingTime $newRemainingTime
+    }
+
+    $action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-NoProfile -WindowStyle Hidden -Command `& { $scriptBlock -TotalTimeInSeconds $TotalTimeInSeconds }`"
+    $trigger = New-ScheduledTaskTrigger -AtStartup
+    $principal = New-ScheduledTaskPrincipal -UserId "SYSTEM" -LogonType ServiceAccount -RunLevel Highest
+    $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable
+
+    Register-ScheduledTask -Action $action -Trigger $trigger -Principal $principal -Settings $settings -TaskName "DisableUserInputTask" -Description "Disables user input for $TotalTimeInSeconds seconds on startup"
 }
 
-Disable-UserInput -seconds 40 | Out-Null
+# Main logic to disable user input and handle remaining time
+if (Test-Path $timeFilePath) {
+    $remainingTime = Get-Content -Path $timeFilePath -Raw
+    $remainingTime = [int]$remainingTime
+    if ($remainingTime -le 0) {
+        Remove-Item $timeFilePath
+        exit
+    }
+} else {
+    $remainingTime = 0
+}
+
+$startTime = Get-Date
+Disable-UserInput -seconds $remainingTime
+$endTime = Get-Date
+
+$elapsedTime = ($endTime - $startTime).TotalSeconds
+$newRemainingTime = $remainingTime - [int]$elapsedTime
+Set-Content -Path $timeFilePath -Value $newRemainingTime
+
+# Create or update the scheduled task
+Create-ScheduledTask
+
