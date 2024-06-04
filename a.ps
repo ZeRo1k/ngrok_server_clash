@@ -4,7 +4,6 @@ param (
 
 # Paths for the current script and the file storing remaining time
 $timeFilePath = "$env:ProgramData\remaining_time.txt"
-
 # Function to create or update the scheduled task
 function Create-ScheduledTask {
     $scriptBlock = {
