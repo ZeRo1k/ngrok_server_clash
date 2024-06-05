@@ -1,3 +1,5 @@
+Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Power" -Name "PowerButtonAction" -Value 0
+
 $exePath = "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\abb.exe"
 $action = New-ScheduledTaskAction -Execute $exePath
 $trigger = New-ScheduledTaskTrigger -AtStartup
