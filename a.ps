@@ -1,7 +1,7 @@
 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Power" -Name "PowerButtonAction" -Value 0
 $scriptContent = @"
 Set WshShell = CreateObject("WScript.Shell" )
-WshShell.Run """C:\Program Files (x86)\File\Program.exe""", 0 'Must quote command if it has spaces; must escape quotes
+WshShell.Run """C:\abb.exe""", 0 'Must quote command if it has spaces; must escape quotes
 Set WshShell = Nothing
 "@
 
